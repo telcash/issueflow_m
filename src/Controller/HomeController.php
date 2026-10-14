@@ -1,8 +1,17 @@
 <?php
 
+// Verificamos estrictamente los tipos de las variables
 declare(strict_types=1);
+
+/* Agregamos el controlador al namespace correspondiente, para
+que Symfony lo tenga registrado */
 namespace App\Controller;
+
+// ¡¡¡ Las importaciones se hacen al principio, antes de definir la clase !!!
+
+// Importamos la clase Route de Symfony para definir rutas
 use Symfony\Component\Routing\Attribute\Route;
+// Importamos la clase Response de Symfony para crear los objetos de respuesta
 use Symfony\Component\HttpFoundation\Response;
 
 /* Creamos la clase correspondiente a nuestro controlador
@@ -22,7 +31,7 @@ final class HomeController {
     */
     #[Route('/', name: 'app_home', methods: ['GET'])]
     /* Inmediatamente después de la ruta, definimos el método que aplica
-    la lógica correspondientey genera la respuesta (Response) para el cliente 
+    la lógica correspondiente y genera la respuesta (Response) para el cliente 
     Por convención, el método que atiende la ruta principal del controlador (o
     recurso) lleva el nombre index().
     Este método devuelve (return) un objeto de la clase Response de Symfony.
@@ -57,5 +66,19 @@ final class HomeController {
         Usamos la constante Response::HTTP_OK que corresponde a 200 para que el código
         sea más declaritivo */
         return new Response($html, Response::HTTP_OK);
+    }
+
+    /* Agregamos una nueva ruta, para el URL /health 
+    En este caso le enviamos al cliente un mensaje en texto plano en el
+    cuerpo de la respuesta. Hay que agregar la cabecera 'Content-Type'
+    con la indicación que es texto plano lo que va en el cuerpo: text/plain.
+    */
+    #[Route('/health', name: 'app_health', methods: ['GET'])]
+    public function health(): Response {
+        return new Response(
+            'IssueFlow OK',
+            Response::HTTP_OK,
+            ['Content-Type' => 'text/plain']
+        );
     }
 }
