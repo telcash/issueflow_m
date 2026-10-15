@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 /* Agregamos el controlador al namespace correspondiente, para
 que Symfony lo tenga registrado */
+
 namespace App\Controller;
 
 // ¡¡¡ Las importaciones se hacen al principio, antes de definir la clase !!!
@@ -14,10 +15,18 @@ use Symfony\Component\Routing\Attribute\Route;
 // Importamos la clase Response de Symfony para crear los objetos de respuesta
 use Symfony\Component\HttpFoundation\Response;
 
+/* Para poder usar el método render() de la clase AbstractController,
+   necesitamos primero importar la clase AbstractController, 
+   y luego extender nuestra clase HomeController de ella.
+*/
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 /* Creamos la clase correspondiente a nuestro controlador
 Tiene el mismo nombre que el archivo en src/Controller
 Usamos el modificador final para que nadie herede de ella */
-final class HomeController {
+
+final class HomeController extends AbstractController
+{
     /* Agregamos al controlador la ruta de la página de inicio 
     Argumentos del constructor de Route:
     1- URL de la ruta, en el caso de la página de inicio es : '/'
@@ -36,36 +45,17 @@ final class HomeController {
     recurso) lleva el nombre index().
     Este método devuelve (return) un objeto de la clase Response de Symfony.
     */
-    public function index(): Response {
-        // Creamos las variables $projectName y $message
-        $projectName = 'IssueFlow';
-        $message = 'Symfony ha recibido la peticón y ha devuelto una respuesta';
-
-        /* Creamos la variable $html que contiene el cuerpo de la respuesta, en
-        este caso un documento HTML */
-        $html = <<<HTML
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>{$projectName}</title>
-            </head>
-            <body>
-                <main>
-                    <h1>{$projectName}</h1>
-                    <p>{$message}</p>
-                    <p><a href="/tickets">Ver incidencias</a></p>
-                    <p><a href="/health">Comprobar estado</a></p>
-                </main>
-            </body>
-            </html>
-        HTML;
-
-        /* Devolvemos el objeto Response con $html como cuerpo (body) y un código 200 (OK)
-        Usamos la constante Response::HTTP_OK que corresponde a 200 para que el código
-        sea más declaritivo */
-        return new Response($html, Response::HTTP_OK);
+    public function index(): Response
+    {
+        /* Retornar un objeto Response a través del metodo render().
+        Argumentos de render():
+        1- Plantilla a la que le envío la información.
+        2- Un array asociativo que contiene los datos. En ese array las claves
+        corresponden a los nombres de "variables" en Twig */
+        return $this->render('home/index.html.twig', [
+            'projectName' => 'IssueFlow',
+            'message' => 'Symfony ha recibido la petición y ha devuelto una respuesta'
+        ]);
     }
 
     /* Agregamos una nueva ruta, para el URL /health 
@@ -74,11 +64,38 @@ final class HomeController {
     con la indicación que es texto plano lo que va en el cuerpo: text/plain.
     */
     #[Route('/health', name: 'app_health', methods: ['GET'])]
-    public function health(): Response {
+    public function health(): Response
+    {
         return new Response(
             'IssueFlow OK',
             Response::HTTP_OK,
             ['Content-Type' => 'text/plain']
         );
     }
+
+    /* Crear una ruta /saludo donde su método devuelva como respuesta
+    en el cuerpo un documento  html que tenga una etiqueta <h1> con un
+    pequeño saludo de prueba (Esto es un ejercicio de prueba, no estará en la app
+    definitiva)
+    #[Route('/saludo', name: 'app_saludo', methods: ['GET'])]
+    public function saludo(): Response 
+    {
+        $html = <<<HTML
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Saludo</title>
+            </head>
+            <body>
+                <main>
+                    <h1>Hola a todos, este es mi saludo</h1>
+                </main>
+            </body>
+            </html>
+        HTML;
+
+        return new Response($html, Response::HTTP_OK);
+    } */
 }
