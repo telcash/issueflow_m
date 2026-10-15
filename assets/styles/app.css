@@ -1,3 +1,45 @@
-body {
-    background-color: skyblue;
+/*
+ * Estilos mínimos de IssueFlow.
+ */
+
+/* Variables visuales y tipografía general de la aplicación. */
+:root {
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #1f2937;
+    background: #f5f7fa;
+}
+
+/* Normalización básica del modelo de cajas. */
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: #0f766e; }
+
+/* Contenedor común para mantener el contenido centrado y legible. */
+.container { width: min(960px, calc(100% - 2rem)); margin-inline: auto; }
+
+/* Cabecera principal y navegación. */
+.site-header { background: #17324d; color: white; }
+.header-inner { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.site-header a { color: white; text-decoration: none; }
+.brand { font-weight: 800; font-size: 1.2rem; }
+nav { display: flex; gap: 1rem; }
+
+/* Espaciado principal de las páginas. */
+main { padding-block: 2.5rem; }
+
+/* Componentes visuales reutilizados en home y tickets. */
+.hero, .ticket-card, .ticket-detail { background: white; border: 1px solid #d8e1e8; border-radius: 12px; padding: 1.25rem; }
+.hero { padding: 2rem; }
+.page-header { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1rem; }
+.eyebrow, .ticket-id { color: #64748b; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.ticket-list { display: grid; gap: .85rem; }
+.ticket-card { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.ticket-card h2 { margin: .15rem 0 .5rem; font-size: 1.05rem; }
+.ticket-card p { margin: .25rem 0; }
+.counter { color: #64748b; }
+.button { display: inline-block; background: #0f766e; color: white; padding: .7rem 1rem; border-radius: 8px; text-decoration: none; }
+
+/* Ajuste sencillo para pantallas pequeñas. */
+@media (max-width: 640px) {
+    .header-inner, .page-header, .ticket-card { align-items: flex-start; flex-direction: column; }
 }

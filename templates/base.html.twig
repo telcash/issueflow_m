@@ -34,10 +34,10 @@
         {% endif %}
     </head>
     <body>
-        <header>
-            <div>
+        <header class="site-header">
+            <div class="container header-inner">
                 {# path() genera la URL a partir del nombre interno de una ruta Symfony #}
-                <a href="{{ path('app_home') }}">IssueFlow</a>
+                <a class="brand" href="{{ path('app_home') }}">IssueFlow</a>
                 
                 {# Barra de navegación principal #}
                 <nav>
@@ -47,8 +47,8 @@
                 </nav>
             </div>
         </header>
-        <main>
-            <div>
+        <main class="site-main">
+            <div class="container">
                 {# Aquí las vistas hijas colocan su contenido principal #}
                 {% block body %}{% endblock %}
             </div>
