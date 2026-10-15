@@ -1,0 +1,28 @@
+{#  Esta plantilla hereda de base.html.twig #}
+{% extends "base.html.twig" %}
+
+{# Sobreescribir el título #}
+{% block title %}{{ title }}{% endblock %}
+
+{# Inserto el cuerpo de la página de /tickets: el listado de todos los tickets #}
+{% block body %}
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">IssueFlow</p>
+            <h1>{{ title }}</h1>
+        </div>
+    </div>
+    <div class="ticket-list">
+        {# Recorremos el array de tickets que el controlador suministró #}
+        {% for ticket in tickets %}
+            <article class="ticket-card">
+                <div>
+                    <p class="ticket-id">{{ ticket.id }}</p>
+                    <h2>{{ ticket.title }}</h2>
+                    <p>Prioridad: <strong>{{ ticket.priority }}</strong></p>
+                    <p>Estado: <strong>{{ ticket.status }}</strong></p>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+{% endblock %}

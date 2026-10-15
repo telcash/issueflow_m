@@ -47,7 +47,7 @@ final class HomeController extends AbstractController
     */
     public function index(): Response
     {
-        /* Retornar un objeto Response a través del metodo render().
+        /* Retorna un objeto Response a través del metodo render().
         Argumentos de render():
         1- Plantilla a la que le envío la información.
         2- Un array asociativo que contiene los datos. En ese array las claves
