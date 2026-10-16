@@ -15,14 +15,12 @@
     <div class="ticket-list">
         {# Recorremos el array de tickets que el controlador suministró #}
         {% for ticket in tickets %}
-            <article class="ticket-card">
-                <div>
-                    <p class="ticket-id">{{ ticket.id }}</p>
-                    <h2>{{ ticket.title }}</h2>
-                    <p>Prioridad: <strong>{{ ticket.priority }}</strong></p>
-                    <p>Estado: <strong>{{ ticket.status }}</strong></p>
-                </div>
-            </article>
+            {#
+                Reutilizamos un fragmento de plantilla para cada tarjeta.
+                "only" limita el contexto del fragmento a la variable ticket,
+                evitando dependencias ocultas con otras variables de la vista.
+            #}
+            {% include 'ticket/_ticket_card.html.twig' with {'ticket': ticket} only %}
         {% endfor %}
     </div>
 {% endblock %}

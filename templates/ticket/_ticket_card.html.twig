@@ -1,0 +1,13 @@
+{#
+    Fragmento reutilizable para representar una incidencia dentro de un listado.
+    El guion bajo inicial es una convención habitual para indicar que este archivo
+    es un partial y no una página completa.
+#}
+<article class="ticket-card">
+    <div>
+        <p class="ticket-id">{{ ticket.id }}</p>
+        <h2>{{ ticket.title }}</h2>
+        <p>Prioridad: <strong>{{ ticket.priority }}</strong></p>
+        <p>Estado: <strong>{{ ticket.status }}</strong></p>
+    </div>
+</article>
