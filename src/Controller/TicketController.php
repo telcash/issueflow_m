@@ -16,25 +16,25 @@ final class TicketController extends AbstractController
     */
     private const TICKETS = [
         [
-            'id' => 101,
+            'id' => 'INC-1001',
             'title' => 'No puedo acceder',
             'priority' => 'urgent',
             'status' => 'open',
         ],
         [
-            'id' => 102,
+            'id' => 'INC-1002',
             'title' => 'Error en factura',
             'priority' => 'high',
             'status' => 'in_progress',
         ],
         [
-            'id' => 103,
+            'id' => 'INC-1003',
             'title' => 'Actualizar datos',
             'priority' => 'normal',
             'status' => 'closed',
         ],
         [
-            'id' => 104,
+            'id' => 'INC-1004',
             'title' => 'El ordenador está en llamas',
             'priority' => 'urgent',
             'status' => 'in_progress',
@@ -51,6 +51,37 @@ final class TicketController extends AbstractController
         return $this->render('ticket/index.html.twig', [
             'tickets' => self::TICKETS,
             'title' => 'Incidencias'
+        ]);
+    }
+
+    /* Ruta dinámica que muestra la información de un ticket en particular 
+    {id} representa una parte variable de la URL
+    Ejemplo válido: /tickets/INC-1001
+    Por convención se identifica con show a la ruta que muestra un recurso
+    en particular (en este caso un ticket)
+    */
+    #[Route('/tickets/{id}', name: 'app_ticket_show', methods: ['GET'])]
+    public function show(string $id): Response
+    {
+        /* Buscamos el ticket en el listado de tickets, puede suceder
+        que el ticket solicitado no exista */
+        /* array_find(), disponible en PHP 8.4+ devuelve el primer elemento
+        del array que cumple con la condición indicada por la función callback.
+        Si no encuentra ningún elemento que cumpla la condición devuelve null */
+        $ticket = array_find(
+            self::TICKETS,
+            fn ($ticket) => $ticket['id'] === $id
+        );
+
+        /* Si $ticket es NULL la incidencia no existe */
+        if ($ticket === NULL) {
+            throw $this->createNotFoundException('No existe la incidencia');
+        }
+
+        /* Si $ticket no es NULL, envío a la plantilla la información
+        de la incidencia */
+        return $this->render('ticket/show.html.twig', [
+            'ticket' => $ticket
         ]);
     }
 }
