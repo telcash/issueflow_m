@@ -1,0 +1,15 @@
+{#  Esta plantilla hereda de base.html.twig #}
+{% extends "base.html.twig" %}
+
+{# Usamos el ID del ticket para construir un título de página específico. #}
+{% block title %}{{ ticket.id }} . Issueflow{% endblock %}
+
+{% block body %}
+    <p>
+        <a href="{{ path('app_ticket_index') }}">Volver a incidencias</a>
+    </p>
+    <p class="ticket-id">{{ ticket.id }}</p>
+    <h1>{{ ticket.title }}</h1>
+    <p>Prioridad: <strong>{{ ticket.priority }}</strong></p>
+    <p>Estado: <strong>{{ ticket.status }}</strong></p>
+{% endblock %}
