@@ -16,7 +16,7 @@ final class Ticket
     public function __construct(
         private string $id,
         private string $title,
-        private string $priority,
+        private TicketPriority $priority,
         private string $status
     )
     {}
@@ -32,7 +32,7 @@ final class Ticket
         return $this->title;
     }
 
-    public function getPriority(): string
+    public function getPriority(): TicketPriority
     {
         return $this->priority;
     }
@@ -52,26 +52,32 @@ final class Ticket
             new Ticket(
                 id: 'INC-1001',
                 title: 'No puedo acceder',
-                priority: 'urgent',
+                priority: TicketPriority::Urgent,
                 status: 'open'
             ),
             new Ticket(
                 id: 'INC-1002',
                 title: 'Error en factura',
-                priority: 'high',
+                priority: TicketPriority::High,
                 status: 'in_progress'
             ),
             new Ticket(
                 id: 'INC-1003',
                 title: 'Actualizar datos',
-                priority: 'normal',
+                priority: TicketPriority::Normal,
                 status: 'closed'
             ),
             new Ticket(
                 id: 'INC-1004',
                 title: 'El ordenador está en llamas',
-                priority: 'urgent',
+                priority: TicketPriority::Urgent,
                 status: 'in_progress'
+            ),
+            new Ticket(
+                id: 'INC-1005',
+                title: 'No me deja cambiar la contraseña',
+                priority: TicketPriority::Low,
+                status: 'open'
             )
         ];
     }
