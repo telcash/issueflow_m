@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Model;
 
+use InvalidArgumentException;
+
 /*
 Ticket representa una incidencia en IssueFloew como
 un objeto PHP
@@ -19,7 +21,19 @@ final class Ticket
         private TicketPriority $priority,
         private TicketStatus $status
     )
-    {}
+    {
+        /* Normalización de title: Eliminar espacios en blanco antes y después 
+        La función trim() elimina estos espacios
+        */
+        $normalizedTitle = trim($title);
+
+        /* Verifico que $normalizedTitle no sea una cadena de texto vacía */
+        if ($normalizedTitle === '') {
+            throw new InvalidArgumentException('El título no puede estar vacío');
+        }
+
+        $this->title = $normalizedTitle;
+    }
 
     /* Creamos los getters para cada uno de los atributos */
     public function getId(): string
@@ -75,7 +89,7 @@ final class Ticket
             ),
             new Ticket(
                 id: 'INC-1005',
-                title: 'No me deja cambiar la contraseña',
+                title: 'Olvidé mi contraseña',
                 priority: TicketPriority::Low,
                 status: TicketStatus::Open
             )
