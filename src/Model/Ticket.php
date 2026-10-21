@@ -17,7 +17,7 @@ final class Ticket
         private string $id,
         private string $title,
         private TicketPriority $priority,
-        private string $status
+        private TicketStatus $status
     )
     {}
 
@@ -37,7 +37,7 @@ final class Ticket
         return $this->priority;
     }
 
-    public function getStatus(): string
+    public function getStatus(): TicketStatus
     {
         return $this->status;
     }
@@ -53,31 +53,31 @@ final class Ticket
                 id: 'INC-1001',
                 title: 'No puedo acceder',
                 priority: TicketPriority::Urgent,
-                status: 'open'
+                status: TicketStatus::Open
             ),
             new Ticket(
                 id: 'INC-1002',
                 title: 'Error en factura',
                 priority: TicketPriority::High,
-                status: 'in_progress'
+                status: TicketStatus::InProgress
             ),
             new Ticket(
                 id: 'INC-1003',
                 title: 'Actualizar datos',
                 priority: TicketPriority::Normal,
-                status: 'closed'
+                status: TicketStatus::Closed
             ),
             new Ticket(
                 id: 'INC-1004',
                 title: 'El ordenador está en llamas',
                 priority: TicketPriority::Urgent,
-                status: 'in_progress'
+                status: TicketStatus::InProgress
             ),
             new Ticket(
                 id: 'INC-1005',
                 title: 'No me deja cambiar la contraseña',
                 priority: TicketPriority::Low,
-                status: 'open'
+                status: TicketStatus::Open
             )
         ];
     }
