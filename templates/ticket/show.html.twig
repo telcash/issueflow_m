@@ -12,4 +12,20 @@
     <h1>{{ ticket.title }}</h1>
     <p>Prioridad: <strong>{{ ticket.priority.label }}</strong></p>
     <p>Estado: <strong>{{ ticket.status.label }}</strong></p>
+    {# 
+        Agregamos el mensaje "Requiere atención inmediata" solo
+        si el ticket tiene una prioridad urgente: TicketPriority::Urgent
+        Todo lo que esté entre el {% if condición %} y {% endif %} aparece
+        en el documento html solo si se cumple la condición
+    #}
+    {% if ticket.urgent %}
+        <p class="ticket-urgent">Requiere atención inmediata</p>
+    {% endif %}
+    {# 
+        Agregamos el mensaje "Incidencia cerrada" solo
+        si el ticket tiene un estado 'closed'
+    #}
+    {% if ticket.closed %}
+        <p class="ticket-closed">Incidencia cerrada</p>
+    {% endif %}
 {% endblock %}

@@ -65,6 +65,19 @@ final class Ticket
         return $this->status;
     }
 
+    /* Método que devuelve true si el ticket tiene una
+    prioridad 'urgent', y false en caso contrario */
+    public function isUrgent(): bool
+    {
+        return $this->priority->isUrgent();
+    }
+
+    /* Método que devuelve true si una incidencia está cerrada */
+    public function isClosed(): bool
+    {
+        return $this->status->isClosed();
+    }
+
     /* Mock data de tickets: Data simulada de prueba. La data real
     se obtendrá luego de una petición a la base de datos. 
     La data se generará con un método estático que devuelva un array de tickets.

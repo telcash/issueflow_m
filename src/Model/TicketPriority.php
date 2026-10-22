@@ -30,4 +30,11 @@ enum TicketPriority: string
             self::Low => 'Baja'
         };
     }
+
+    /* Método que verifica si la prioridad es urgente
+    Se implementa acá porque este es el responsable de prioridades de Ticket */
+    public function isUrgent(): bool
+    {
+        return $this === self::Urgent;
+    }
 }

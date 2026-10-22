@@ -36,6 +36,8 @@ main { padding-block: 2.5rem; }
 .ticket-card { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .ticket-card h2 { margin: .15rem 0 .5rem; font-size: 1.05rem; }
 .ticket-card p { margin: .25rem 0; }
+.ticket-urgent { color: red; font-weight:800 }
+.ticket-closed { color:#045504; font-weight: 700 }
 .counter { color: #64748b; }
 .button { display: inline-block; background: #0f766e; color: white; padding: .7rem 1rem; border-radius: 8px; text-decoration: none; }
 

@@ -28,4 +28,10 @@ enum TicketStatus: string
             self::Closed => 'Cerrado'
         };
     }
+
+    /* Método que devuelve true si una incidencia está cerrada */
+    public function isClosed(): bool
+    {
+        return $this === self::Closed;
+    }
 }
