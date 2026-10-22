@@ -4,13 +4,22 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Model\Ticket;
+use App\Service\TicketCatalog;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 final class TicketController extends AbstractController
 {
+    /* Constructor de TicketController 
+    Cuando symfony levanta la aplicación, crea una instancia del controlador.
+    Inyecto el servicio TicketCatalog
+    */
+    public function __construct(
+        private readonly TicketCatalog $ticketCatalog
+    )
+    {}
+
    /* Crear la ruta /tickets que muestra el listado de todos los tickets
     Por convención se identifica con index a la ruta que muestra un listado
     del recurso (en este caso tickets)
@@ -19,7 +28,7 @@ final class TicketController extends AbstractController
     public function index(): Response
     {
         return $this->render('ticket/index.html.twig', [
-            'tickets' => Ticket::getAllTickets(),
+            'tickets' => $this->ticketCatalog->getTickets(),
             'title' => 'Incidencias'
         ]);
     }
@@ -35,7 +44,7 @@ final class TicketController extends AbstractController
     {
         /* Buscamos el ticket en el listado de tickets, puede suceder
         que el ticket solicitado no exista */
-        $ticket = Ticket::find($id);
+        $ticket = $this->ticketCatalog->find($id);
 
         /* Si $ticket es NULL la incidencia no existe */
         if ($ticket === NULL) {
