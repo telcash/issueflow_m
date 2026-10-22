@@ -8,7 +8,7 @@
         <p class="ticket-id">{{ ticket.id }}</p>
         <h2>{{ ticket.title }}</h2>
         <p>Prioridad: <strong>{{ ticket.priority.label }}</strong></p>
-        <p>Estado: <strong>{{ ticket.status.value }}</strong></p>
+        <p>Estado: <strong>{{ ticket.status.label }}</strong></p>
         {# Agregamos un enlace a la vista particular de este ticket #}
         <a href="{{ path('app_ticket_show', { id: ticket.id }) }}">Ver detalle</a>
     </div>

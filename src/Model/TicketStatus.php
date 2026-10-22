@@ -15,4 +15,17 @@ enum TicketStatus: string
     case Open = 'open';
     case InProgress = 'in_progress';
     case Closed = 'closed';
+
+    /*  Un enum también puede tener métodos.
+        Implementamos el método getLabel() para
+        asignar especificamente el texto que se quiere mostrar al usuario
+    */
+    public function getLabel(): string
+    {
+        return match ($this) {
+            self::Open => 'Abierto',
+            self::InProgress => 'En Progreso',
+            self::Closed => 'Cerrado'
+        };
+    }
 }
