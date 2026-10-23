@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Contract\TicketCatalogInterface;
-use App\Service\TicketSlaCalculator;
+use App\Contract\TicketSlaCalculatorInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,7 +19,7 @@ final class TicketController extends AbstractController
     */
     public function __construct(
         private readonly TicketCatalogInterface $ticketCatalog,
-        private readonly TicketSlaCalculator $slaCalculator
+        private readonly TicketSlaCalculatorInterface $slaCalculator
     )
     {}
 
