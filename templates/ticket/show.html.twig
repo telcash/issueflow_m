@@ -12,6 +12,8 @@
     <h1>{{ ticket.title }}</h1>
     <p>Prioridad: <strong>{{ ticket.priority.label }}</strong></p>
     <p>Estado: <strong>{{ ticket.status.label }}</strong></p>
+    {# Agregar el tiempo de respuesta #}
+    <p>Objetivo de respuesta: <strong>{{ responseTargetHours }} horas</strong></p>
     {# 
         Agregamos el mensaje "Requiere atención inmediata" solo
         si el ticket tiene una prioridad urgente: TicketPriority::Urgent
