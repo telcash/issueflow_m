@@ -1,0 +1,20 @@
+{#
+    Página 404 centralizada de IssueFlow.
+
+    En entorno dev Symfony muestra su página técnica de excepción para facilitar
+    el debugging. Esta plantilla representa la experiencia que queremos ofrecer
+    al usuario final y puede previsualizarse con /_error/404 cuando las rutas de
+    preview de errores están disponibles en desarrollo.
+#}
+{% extends 'base.html.twig' %}
+
+{% block title %}Página no encontrada - IssueFlow{% endblock %}
+
+{% block body %}
+    <section class="error-page">
+        <p class="eyebrow">Error 404</p>
+        <h1>No encontramos esa página</h1>
+        <p>La dirección puede ser incorrecta o el recurso puede haber dejado de estar disponible</p>
+        <p><a href="{{ path('app_home') }}">Volver al inicio</a></p>
+    </section>
+{% endblock %}

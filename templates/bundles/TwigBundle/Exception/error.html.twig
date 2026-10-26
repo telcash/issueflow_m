@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+{% block title %}Error {{ status_code }} - IssueFlow{% endblock %}
+{% block body %}
+    <section class="error-page">
+        <p class="eyebrow">Error {{ status_code }}</p>
+        <h1>Algo ha salido mal</h1>
+        <p>
+            {{ status_text }}
+        </p>
+        <p>
+            <a href="{{ path('app_home') }}">Volver al inicio</a>
+        </p>
+    </section>
+{% endblock %}
