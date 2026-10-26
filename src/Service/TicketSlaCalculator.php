@@ -7,7 +7,9 @@ namespace App\Service;
 use App\Contract\TicketSlaCalculatorInterface;
 use App\Model\Ticket;
 use App\Model\TicketPriority;
+use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
+#[AsAlias(TicketSlaCalculatorInterface::class)]
 final class TicketSlaCalculator implements TicketSlaCalculatorInterface
 {
     public function getResponseTargetHours(Ticket $ticket): int
