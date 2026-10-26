@@ -9,6 +9,7 @@ use App\Contract\TicketSlaCalculatorInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Psr\Log\LoggerInterface;
 
 final class TicketController extends AbstractController
 {
@@ -19,7 +20,8 @@ final class TicketController extends AbstractController
     */
     public function __construct(
         private readonly TicketCatalogInterface $ticketCatalog,
-        private readonly TicketSlaCalculatorInterface $slaCalculator
+        private readonly TicketSlaCalculatorInterface $slaCalculator,
+        private readonly LoggerInterface $logger
     )
     {}
 
@@ -51,6 +53,12 @@ final class TicketController extends AbstractController
 
         /* Si $ticket es NULL la incidencia no existe */
         if ($ticket === NULL) {
+            /* Guardo la información en el log para investigaciones posteriores */
+            $this->logger->warning('Se solicitó una incidencia no existente', [
+                'ticket_id' => $id,
+                'route' => 'app_ticket_show',
+            ]);
+
             throw $this->createNotFoundException('No existe la incidencia');
         }
 
