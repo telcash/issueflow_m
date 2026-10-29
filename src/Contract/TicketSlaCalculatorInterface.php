@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Contract;
 
-use App\Model\Ticket;
+use App\Entity\Ticket;
 
 interface TicketSlaCalculatorInterface
 {

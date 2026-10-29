@@ -2,33 +2,59 @@
 
 declare(strict_types=1);
 
-namespace App\Model;
+namespace App\Entity;
 
+use App\Model\TicketPriority;
+use App\Model\TicketStatus;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 
-/*
-Ticket representa una incidencia en IssueFloew como
-un objeto PHP
-*/
+/**
+ * Entity Doctrine de una incidencia de IssueFlow
+ * Sigue siendo un objeto PHP pero le añadiremos
+ * el mapeo necesario para que Doctrine sepa como
+ * persistirlo en la base de datos
+ */
+#[ORM\Entity] // Decimos que la clase es también una entidad Doctrine
+#[ORM\Table(name: 'tickets')] // Asignamos la tabla correspondiente en la Base de datos
 final class Ticket
 {
+    /**
+     * Identificador técnico (id) de base de datos.
+     * Comienza con un valor null porque una entidad recién
+     * creada aún no ha sido insertada.
+     * El valor de id será asignado al momento de persistirla
+     */
+    #[ORM\Id] // Indica que corresponde a la clave primaria (PK: Primary key)
+    #[ORM\GeneratedValue] // Indica que es un valor autogenerado
+    #[ORM\Column(type: Types::BIGINT, options: ['unsigned' => true])] // Si no especifico nombre de la columna, esta toma el nombre del atributo
+    private ?int $id = null;
+
     /*
     Constructor Property Promotion (PHP moderno)
     */
     public function __construct(
-        private string $id,
+        #[ORM\Column(length: 8, unique: true)]
+        private readonly string $code, // readonly: solo lectura, una vez creado no puedo cambiar el valor de code
+
+        #[ORM\Column(length: 180)]
         private string $title,
+
+        #[ORM\Column(length: 20, enumType: TicketPriority::class)]
         private TicketPriority $priority,
+        
+        #[ORM\Column(length: 20, enumType: TicketStatus::class)]
         private TicketStatus $status
     )
     {
-        /*  Validar el formato de id: INC- seguido de cuatro dígitos
+        /*  Validar el formato de code: INC- seguido de cuatro dígitos
             Para ello usamos una regex: regular expression (expresión regular): '/^INC-\d{4}$/'
             La función preg_match() compara una cadena de texto con la regex y devuelve 1
             si la cadena de texto es válida
         */
-        if(preg_match('/^INC-\d{4}$/', $this->id) !== 1) {
-            throw new InvalidArgumentException('El id no tiene un formato válido');
+        if(preg_match('/^INC-\d{4}$/', $this->code) !== 1) {
+            throw new InvalidArgumentException('El código no tiene un formato válido');
         }
 
         /* Normalización de title: Eliminar espacios en blanco antes y después 
@@ -45,9 +71,14 @@ final class Ticket
     }
 
     /* Creamos los getters para cada uno de los atributos */
-    public function getId(): string
+    public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getCode(): string
+    {
+        return $this->code;
     }
 
     public function getTitle(): string

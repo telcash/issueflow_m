@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
-use App\Model\Ticket;
+use App\Entity\Ticket;
 use App\Service\InMemoryTicketCatalog;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

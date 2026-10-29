@@ -31,7 +31,7 @@ main { padding-block: 2.5rem; }
 .hero, .ticket-card, .ticket-detail { background: white; border: 1px solid #d8e1e8; border-radius: 12px; padding: 1.25rem; }
 .hero { padding: 2rem; }
 .page-header { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1rem; }
-.eyebrow, .ticket-id { color: #64748b; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.eyebrow, .ticket-code { color: #64748b; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
 .ticket-list { display: grid; gap: .85rem; }
 .ticket-card { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .ticket-card h2 { margin: .15rem 0 .5rem; font-size: 1.05rem; }

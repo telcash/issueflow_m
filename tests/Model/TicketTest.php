@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Model;
 
-use App\Model\Ticket;
+use App\Entity\Ticket;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
 use InvalidArgumentException;

@@ -39,23 +39,23 @@ final class TicketController extends AbstractController
     }
 
     /* Ruta dinámica que muestra la información de un ticket en particular 
-    {id} representa una parte variable de la URL
+    {code} representa una parte variable de la URL
     Ejemplo válido: /tickets/INC-1001
     Por convención se identifica con show a la ruta que muestra un recurso
     en particular (en este caso un ticket)
     */
-    #[Route('/tickets/{id}', name: 'app_ticket_show', methods: ['GET'])]
-    public function show(string $id): Response
+    #[Route('/tickets/{code}', name: 'app_ticket_show', methods: ['GET'])]
+    public function show(string $code): Response
     {
         /* Buscamos el ticket en el listado de tickets, puede suceder
         que el ticket solicitado no exista */
-        $ticket = $this->ticketCatalog->find($id);
+        $ticket = $this->ticketCatalog->findByCode($code);
 
         /* Si $ticket es NULL la incidencia no existe */
         if ($ticket === NULL) {
             /* Guardo la información en el log para investigaciones posteriores */
             $this->logger->warning('Se solicitó una incidencia no existente', [
-                'ticket_id' => $id,
+                'ticket_code' => $code,
                 'route' => 'app_ticket_show',
             ]);
 

@@ -5,7 +5,7 @@
 #}
 <article class="ticket-card">
     <div>
-        <p class="ticket-id">{{ ticket.id }}</p>
+        <p class="ticket-code">{{ ticket.code }}</p>
         <h2>{{ ticket.title }}</h2>
         <p>Prioridad: <strong>{{ ticket.priority.label }}</strong></p>
         <p>Estado: <strong>{{ ticket.status.label }}</strong></p>
@@ -26,6 +26,6 @@
             <p class="ticket-closed">Incidencia cerrada</p>
         {% endif %}
         {# Agregamos un enlace a la vista particular de este ticket #}
-        <a href="{{ path('app_ticket_show', { id: ticket.id }) }}">Ver detalle</a>
+        <a href="{{ path('app_ticket_show', { code: ticket.code }) }}">Ver detalle</a>
     </div>
 </article>

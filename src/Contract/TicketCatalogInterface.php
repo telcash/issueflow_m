@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Contract;
 
-use App\Model\Ticket;
+use App\Entity\Ticket;
 
 /*
     Contrato que define que necesita mi aplicación de cualquier catálogo
@@ -18,6 +18,6 @@ interface TicketCatalogInterface
     public function getTickets(): array;
 
     /* Método que busca una incidencia en el listado según un
-    id proporcionado, y que devuelva null si no existe */
-    public function find(string $id): ?Ticket;
+    code proporcionado, y que devuelva null si no existe */
+    public function findByCode(string $code): ?Ticket;
 }

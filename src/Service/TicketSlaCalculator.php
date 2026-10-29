@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Contract\TicketSlaCalculatorInterface;
-use App\Model\Ticket;
+use App\Entity\Ticket;
 use App\Model\TicketPriority;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
