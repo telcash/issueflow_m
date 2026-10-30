@@ -21,6 +21,9 @@
                 evitando dependencias ocultas con otras variables de la vista.
             #}
             {% include 'ticket/_ticket_card.html.twig' with {'ticket': ticket} only %}
+        {% else %}
+            {# Twig ejecuta este bloque si la colección está vacía (no hay tickets) #}
+            <p>No hay incidencias disponibles</p>
         {% endfor %}
     </div>
 {% endblock %}

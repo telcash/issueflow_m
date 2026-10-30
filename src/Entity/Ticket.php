@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
+use App\Repository\TicketRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
@@ -16,7 +17,7 @@ use InvalidArgumentException;
  * el mapeo necesario para que Doctrine sepa como
  * persistirlo en la base de datos
  */
-#[ORM\Entity] // Decimos que la clase es también una entidad Doctrine
+#[ORM\Entity(repositoryClass: TicketRepository::class)] // Decimos que la clase es también una entidad Doctrine y que usa TicketRepository
 #[ORM\Table(name: 'tickets')] // Asignamos la tabla correspondiente en la Base de datos
 final class Ticket
 {
