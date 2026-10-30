@@ -32,6 +32,25 @@ final class Ticket
     #[ORM\Column(type: Types::BIGINT, options: ['unsigned' => true])] // Si no especifico nombre de la columna, esta toma el nombre del atributo
     private ?int $id = null;
 
+    /**
+     * Para establecer la relación es obligatorio el mapeo en este lado, el lado del ManyToOne
+     * Esta es una relación unidireccional. Ticket es el lado propietario de la relación
+     * porque la FK assignee_id vive en la tabla de tickets.
+     */
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?User $assignee = null;
+
+    /**
+     * Para establecer la relación es obligatorio el mapeo en este lado, el lado del ManyToOne
+     * Esta es una relación bidireccional. Ticket es el lado propietario de la relación
+     * porque la FK category_id vive en la tabla de tickets.
+     * Category::$tickets es el lado inverso y usa mappedBy="category".
+     */
+    #[ORM\ManyToOne(inversedBy: 'tickets')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Category $category = null;
+
     /*
     Constructor Property Promotion (PHP moderno)
     */
@@ -95,6 +114,30 @@ final class Ticket
     public function getStatus(): TicketStatus
     {
         return $this->status;
+    }
+
+    // Desde Ticket puedo ver su assignee
+    public function getAssignee(): ?User
+    {
+        return $this->assignee;
+    }
+
+    // Desde Ticket puedo ver su category
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    // Setters para los atributos de las relaciones
+    // Asignamos un usuario a un ticket
+    public function assignTo(?User $assignee): void
+    {
+        $this->assignee = $assignee;
+    }
+    // Asignamos una categoría a un ticket
+    public function setCategory(?Category $category): void
+    {
+        $this->category = $category;
     }
 
     /* Método que devuelve true si el ticket tiene una
