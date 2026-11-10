@@ -64,7 +64,7 @@ final class TicketController extends AbstractController
         $filterForm->handleRequest($request);
 
         return $this->render('ticket/index.html.twig', [
-            'tickets' => $this->ticketCatalog->getTickets(),
+            'tickets' => $this->ticketCatalog->search($criteria),
             'title' => 'Incidencias',
             'lastTicketCode' => $lastTicketCode,
             'filterForm' => $filterForm

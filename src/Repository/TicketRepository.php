@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Contract\TicketCatalogInterface;
 use App\Entity\Ticket;
+use App\Form\Model\TicketSearchCriteria;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
@@ -46,5 +47,73 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
             datos que cumple con las condiciones indicadas
         */
         return $this->findOneBy(['code' => $code]);
+    }
+
+    /**
+     * Método que devuelve un listado de incidencias dado unos criterios
+     */
+    public function search(TicketSearchCriteria $criteria): array
+    {
+        /**
+         * Construimos una queryBuilder que pide todos los tickets,
+         * agrega la información de category y assignee y ordena los tickets
+         * por id de manera descendente
+         */
+        $queryBuilder = $this->createQueryBuilder('ticket')
+            // Agregamos la información de category
+            ->leftJoin('ticket.category', 'category')
+            ->addSelect('category')
+            // Agregamos la información de assignee
+            ->leftJoin('ticket.assignee', 'assignee')
+            ->addSelect('assignee')
+            // Ordena por id de manera descendente
+            ->orderBy('ticket.id', 'DESC');
+        
+        // Agregamos los criterios a $queryBuilder si son válidos
+
+        // Verificar el criterio de búsqueda y normalizarlo
+        // Operador ternario $var = condición ? valor si condición se cumple : valor si condición no se cumple
+        $search = $criteria->query ? trim($criteria->query) : '';
+
+        // Si hay un criterio de búsqueda lo agregamos
+        if ($search !== '') {
+            $queryBuilder
+                // andWhere agrega un filtro o condición
+                // LOWER convierte el texto a minúsculas
+                // LIKE compara cadenas de texto a ver si son similares
+                ->andWhere(
+                    'LOWER(ticket.code) LIKE :search OR LOWER(ticket.title) LIKE :search'
+                )
+                // Fija el valor del parámatro search con el valor de nuestra variable $search
+                // previamente, transforma $search a minúscula
+                // por seguridad, insertamos los valores de nuestras variables con setParameter,
+                // y no directamente en la instrucción andWhere
+                ->setParameter('search', '%'.strtolower($search).'%');
+        }
+
+        // Aplicamos filtro por prioridad si no es null
+        if ($criteria->priority !== null) {
+            $queryBuilder
+                ->andWhere('ticket.priority = :priority')
+                ->setParameter('priority', $criteria->priority->value);
+        }
+
+        // Aplicamos filtro por status si no es null
+        if ($criteria->status !== null) {
+            $queryBuilder
+                ->andWhere('ticket.status = :status')
+                ->setParameter('status', $criteria->status->value);
+        }
+
+        // Aplicamos filtro por category si no es null
+        if ($criteria->category !== null) {
+            $queryBuilder
+                ->andWhere('ticket.category = :category')
+                ->setParameter('category', $criteria->category);
+        }
+
+        // getQuery() extrae la query de $queryBuilder y getResult() da el listado de resultados
+        // correspondientes a esa query
+        return $queryBuilder->getQuery()->getResult();
     }
 }
