@@ -7,6 +7,8 @@ namespace App\Controller;
 use App\Contract\TicketCatalogInterface;
 use App\Contract\TicketSlaCalculatorInterface;
 use App\Form\Model\TicketCreateData;
+use App\Form\Model\TicketSearchCriteria;
+use App\Form\TicketFilterType;
 use App\Form\TicketType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -50,10 +52,22 @@ final class TicketController extends AbstractController
             $lastTicketCode = $request->getSession()->get('last_ticket_code');
         }
 
+        // Este objeto representa los criterios que llegan desde el formulario GET
+        $criteria = new TicketSearchCriteria();
+
+        // Creamos el objeto formulario
+        $filterForm = $this->createForm(TicketFilterType::class, $criteria,[
+            'action' => $this->generateUrl('app_ticket_index'),
+        ]);
+
+        // Proceso el formulario
+        $filterForm->handleRequest($request);
+
         return $this->render('ticket/index.html.twig', [
             'tickets' => $this->ticketCatalog->getTickets(),
             'title' => 'Incidencias',
-            'lastTicketCode' => $lastTicketCode
+            'lastTicketCode' => $lastTicketCode,
+            'filterForm' => $filterForm
         ]);
     }
 

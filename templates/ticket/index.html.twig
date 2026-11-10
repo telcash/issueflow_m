@@ -18,6 +18,29 @@
             <a href="{{ path('app_ticket_new') }}">Nueva incidencia</a>
         {% endif %}  
     </div>
+    {#
+        Es un formulario o filtro GET, filtar no modifica el estado del servidor.
+        Sus valores quedan visibles y compartibles en la URL
+    #}
+    <section class="filter-card">
+        {# Inicio del formulario de filtrado #} 
+        {{ form_start(filterForm, { attr: { class: 'filter-form'} }) }}
+            {# Campos de entrada del formulario de filtrado #}
+            {{ form_row(filterForm.query) }}
+            {{ form_row(filterForm.priority) }}
+            {{ form_row(filterForm.status) }}
+            {{ form_row(filterForm.category) }}
+
+            <div class="filter-actions">
+                {# Botón para aplicar los filtros #}
+                {{ form_widget(filterForm.filter) }}
+                {# Botón para limpiar el formulario refrescando la página del listado #}
+                <a class="button button-outline" href="{{ path('app_ticket_index') }}">
+                    Limpiar
+                </a>
+            </div>
+        {{ form_end(filterForm) }}
+    </section>
 
     {#
         Mostramos un enlance a el último ticket visitado,

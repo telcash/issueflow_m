@@ -353,3 +353,60 @@ input[type="submit"]:focus-visible {
         flex-direction: column;
     }
 }
+/* Clase 26 · filtros y paginación */
+.filter-card {
+    background: #ffffff;
+    border: 1px solid #d8e1e8;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.filter-form {
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: .75rem;
+    align-items: end;
+}
+
+.filter-form > div {
+    margin: 0;
+}
+
+.filter-form input[type="search"] {
+    width: 100%;
+    padding: .65rem .85rem;
+    font: inherit;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+}
+
+.filter-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: row !important;
+    gap: .75rem;
+}
+
+.pagination {
+    margin-top: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+@media (max-width: 800px) {
+    .filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-actions {
+        grid-column: auto;
+    }
+
+    .pagination {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
