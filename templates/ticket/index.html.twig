@@ -16,7 +16,12 @@
         #}
         {% if is_granted('ROLE_AGENT') %}
             <a href="{{ path('app_ticket_new') }}">Nueva incidencia</a>
-        {% endif %}  
+        {% endif %}
+        {#
+            ticketPage será suministrado por el contralador, es un objeto WindowPage
+            getTotalCount() devuelve la cantidad de tickets totales
+        #}
+        <p class="counter">{{ ticketPage.getTotalCount() }} incidencias</p>  
     </div>
     {#
         Es un formulario o filtro GET, filtar no modifica el estado del servidor.
@@ -54,8 +59,11 @@
     {% endif %}
     
     <div class="ticket-list">
-        {# Recorremos el array de tickets que el controlador suministró #}
-        {% for ticket in tickets %}
+        {# 
+            Recorremos la colección de tickets de la página actual 
+            El método getItems() devuelve el array de tickets de la página actual
+        #}
+        {% for ticket in ticketPage.getItems() %}
             {#
                 Reutilizamos un fragmento de plantilla para cada tarjeta.
                 "only" limita el contexto del fragmento a la variable ticket,
@@ -67,4 +75,48 @@
             <p>No hay incidencias disponibles</p>
         {% endfor %}
     </div>
+
+    {# Controles de navegación del paginador #}
+    {#
+        El método hasToPaginate() verifica si es necesario paginar, esto es, si los
+        resultados no caben en una sola página 
+    #}
+    {% if ticketPage.hasToPaginate() %}
+        {# Guardo todos los parámetros actuales de la URL en una variable params #}
+        {% set params = app.request.query.all %}
+
+        {# Agrego un elemento nav de HTML #}
+        <nav class="pagination">
+            {#
+                Mostramos el enlace a la página previa sólo si existe una página previa
+                Navegamos (refrescamos) la página del listado de tickets, pero cambiamos
+                el valor de page por el valor de page - 1, que corresponde a la página anterior
+            #}
+            {% if ticketPage.hasPreviousPage() %}
+                <a
+                    class="button button-outline" 
+                    href="{{ path('app_ticket_index', params|merge({ page: ticketPage.getPageNumber() - 1 })) }}"
+                >
+                    ← Anterior
+                </a>
+            {% endif %}
+            <span>
+                Página {{ ticketPage.getPageNumber() }} de {{ ticketPage.getPageCount() }}
+            </span>
+            {#
+                Mostramos el enlace a la página siguiente sólo si existe una página siguiente
+                Navegamos (refrescamos) la página del listado de tickets, pero cambiamos
+                el valor de page por el valor de page + 1, que corresponde a la página siguiente
+            #}
+            {% if ticketPage.hasNextPage() %}
+                <a
+                    class="button button-outline" 
+                    href="{{ path('app_ticket_index', params|merge({ page: ticketPage.getPageNumber() + 1 })) }}"
+                >
+                    Siguiente →
+                </a>
+            {% endif %}
+        </nav>
+    {% endif %}
+    
 {% endblock %}

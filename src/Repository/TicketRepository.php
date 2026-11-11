@@ -8,6 +8,9 @@ use App\Contract\TicketCatalogInterface;
 use App\Entity\Ticket;
 use App\Form\Model\TicketSearchCriteria;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
+use Doctrine\ORM\Tools\Pagination\Window;
+use Doctrine\ORM\Tools\Pagination\WindowPage;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
@@ -50,9 +53,11 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
     }
 
     /**
-     * Método que devuelve un listado de incidencias dado unos criterios
+     * Método que devuelve una paágina de resultados dado unos criterios
+     * $page indica cual es el número de página solicitada
+     * $pageSize indica cuántos elementos hay en cada página
      */
-    public function search(TicketSearchCriteria $criteria): array
+    public function search(TicketSearchCriteria $criteria, int $page, int $pageSize): WindowPage
     {
         /**
          * Construimos una queryBuilder que pide todos los tickets,
@@ -112,8 +117,25 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
                 ->setParameter('category', $criteria->category);
         }
 
-        // getQuery() extrae la query de $queryBuilder y getResult() da el listado de resultados
-        // correspondientes a esa query
-        return $queryBuilder->getQuery()->getResult();
+        // Primero me aseguro que el número de página nunca pueda ser menor que 1
+        // La función max() devuelve el mayor de los argumentos
+        $page = max(1, $page);
+
+        /**
+         * Del listado de resultados posibles solo solicito los correspondientes
+         * a la página definida por $page, que serían máximo $pageSize resultados
+         * OffsetPaginator crea un paginador basado en OFFSET y LIMIT
+         * OFFSET le indica a la BD cúantos resultados debe "saltarse" del listado
+         * LIMIT le indica a la BD cuántos resultados máximos debe retornar
+         * fetchJoinCollection: false evita problemas habituales de paginación con relaciones OneToMany o ManyToMany
+         * paginate() prepara y ejecuta la consulta paginada y devuelve el resultado
+         * $queryBuilder es la consulta en sí que se quiere ejecutar
+         * Window::fromPageNumberAndSize define la ventana de resultados: $page es el número de página
+         * y $pageSize la cantidad de elementos por página
+         */
+        return (new OffsetPaginator(fetchJoinCollection: false))->paginate(
+            $queryBuilder,
+            Window::fromPageNumberAndSize($page, $pageSize)
+        );
     }
 }
