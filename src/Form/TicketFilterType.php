@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Entity\Category;
+use App\Entity\User;
 use App\Form\Model\TicketSearchCriteria;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
@@ -48,6 +49,13 @@ final class TicketFilterType extends AbstractType
                 'choice_label' => 'name',
                 'required' => false,
                 'placeholder' => 'Todas'
+            ])
+            ->add('assignee', EntityType::class, [
+                'label' => 'Asignado',
+                'class' => User::class,
+                'choice_label' => 'name',
+                'required' => false,
+                'placeholder' => 'Todos'
             ])
             ->add('filter', SubmitType::class, [
                 'label' => 'Filtrar'

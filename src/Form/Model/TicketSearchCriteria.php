@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form\Model;
 
 use App\Entity\Category;
+use App\Entity\User;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
 
@@ -25,4 +26,7 @@ final class TicketSearchCriteria
 
     // Filtramos por categoría
     public ?Category $category = null;
+
+    // Filtramos por asignado
+    public ?User $assignee = null;
 }
