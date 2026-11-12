@@ -14,13 +14,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Contract\TicketCatalogInterface;
 use App\Entity\Ticket;
+use App\Service\TicketPaginator;
 
 final class ApiTicketController extends AbstractController
 {
-    private const PAGE_SIZE = 3;
-
     public function __construct(
         private readonly TicketCatalogInterface $ticketCatalog,
+        private readonly TicketPaginator $ticketPaginator,
     )
     {}
     /**
@@ -97,25 +97,10 @@ final class ApiTicketController extends AbstractController
         }
 
         /**
-         * Extraer de la url el número de página solicitada, usa filter_var() para validar
-         * que es un número entero, si la validación falla le asigna el valor por defecto de 1
-        */  
-        $page = filter_var($request->query->get('page'), FILTER_VALIDATE_INT, ['options' => ['default' => 1]]);
-
-        // Pido la página al repositorio, establezco un tamaño de página
-        $ticketPage = $this->ticketCatalog->search($criteria, $page, self::PAGE_SIZE);
-
-        /**
-         * getPageNumber() me devuelve el número de la página
-         * getPageCount() me devuelve el número total de páginas (según la división que hizo el paginador)
+         * Usar el servicio TicketPaginator para obtener la página
+         * adecuada
          */
-        if ($ticketPage->getPageNumber() > $ticketPage->getPageCount()) {
-            $ticketPage = $this->ticketCatalog->search(
-                $criteria,
-                $ticketPage->getPageCount(),
-                self::PAGE_SIZE
-            );
-        }
+        $ticketPage = $this->ticketPaginator->getTicketPage($criteria, $request->query->get('page'));
 
         /**
          * Antes de enviar la respuesta al usuario, necesito convertir el objeto WindowPage

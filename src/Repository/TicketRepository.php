@@ -124,10 +124,6 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
                 ->setParameter('assignee', $criteria->assignee);
         }
 
-        // Primero me aseguro que el número de página nunca pueda ser menor que 1
-        // La función max() devuelve el mayor de los argumentos
-        $page = max(1, $page);
-
         /**
          * Del listado de resultados posibles solo solicito los correspondientes
          * a la página definida por $page, que serían máximo $pageSize resultados

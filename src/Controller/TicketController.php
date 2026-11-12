@@ -10,6 +10,7 @@ use App\Form\Model\TicketCreateData;
 use App\Form\Model\TicketSearchCriteria;
 use App\Form\TicketFilterType;
 use App\Form\TicketType;
+use App\Service\TicketPaginator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,9 +22,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class TicketController extends AbstractController
 {
-    // Creo una constante PAGE_SIZE para evitar el uso de "números mágicos" como argumentos
-    private const PAGE_SIZE = 3;
-
     /* Constructor de TicketController 
     Cuando symfony levanta la aplicación, crea una instancia del controlador.
     Inyecto el servicio TicketCatalog
@@ -33,7 +31,8 @@ final class TicketController extends AbstractController
         private readonly TicketCatalogInterface $ticketCatalog,
         private readonly TicketSlaCalculatorInterface $slaCalculator,
         private readonly LoggerInterface $logger,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TicketPaginator $ticketPaginator,
     )
     {}
 
@@ -68,25 +67,10 @@ final class TicketController extends AbstractController
         $filterForm->handleRequest($request);
 
         /**
-         * Extraer de la url el número de página solicitada, usa filter_var() para validar
-         * que es un número entero, si la validación falla le asigna el valor por defecto de 1
-        */  
-        $page = filter_var($request->query->get('page'), FILTER_VALIDATE_INT, ['options' => ['default' => 1]]);
-
-        // Pido la página al repositorio, establezco un tamaño de página
-        $ticketPage = $this->ticketCatalog->search($criteria, $page, self::PAGE_SIZE);
-
-        /**
-         * getPageNumber() me devuelve el número de la página
-         * getPageCount() me devuelve el número total de páginas (según la división que hizo el paginador)
+         * Usar el servicio TicketPaginator para obtener la página
+         * adecuada
          */
-        if ($ticketPage->getPageNumber() > $ticketPage->getPageCount()) {
-            $ticketPage = $this->ticketCatalog->search(
-                $criteria,
-                $ticketPage->getPageCount(),
-                self::PAGE_SIZE
-            );
-        }
+        $ticketPage = $this->ticketPaginator->getTicketPage($criteria, $request->query->get('page'));
 
         return $this->render('ticket/index.html.twig', [
             'title' => 'Incidencias',
