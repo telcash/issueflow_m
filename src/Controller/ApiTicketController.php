@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Api\Model\TicketCreatePayload;
 use App\Form\Model\TicketSearchCriteria;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
@@ -15,14 +16,18 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Contract\TicketCatalogInterface;
 use App\Entity\Ticket;
 use App\Service\TicketPaginator;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 
 final class ApiTicketController extends AbstractController
 {
     public function __construct(
         private readonly TicketCatalogInterface $ticketCatalog,
         private readonly TicketPaginator $ticketPaginator,
+        private readonly EntityManagerInterface $entityManager,
     ) {}
     /**
+     * Esta ruta devuelve un listado de las incidencias
      * Está petición se hace con el protocolo HTTP, aunque venga de una app móvil
      * Ejemplo de url: miappdeincidencias.com/api/tickets?query=factura&category=1&priority=urgent&page=1
      */
@@ -124,6 +129,57 @@ final class ApiTicketController extends AbstractController
             'tickets' => $items
         ]);
     }
+
+    /**
+     * Ruta para crear una incidencia desde JSON
+     */
+    #[Route('/api/tickets', name: 'app_api_ticket_create', methods: ['POST'])]
+
+    /**
+     * MapRequestPayload mapea los datos recibidos en el formato aceptado (JSON)
+     * y los convierte a un objeto de la clase indicada (TicketCreatePayload),
+     * aplica previamente las validaciones de este objeto si existen, si la
+     * validación falla devuelve el error establecido en validationFailedStatusCode
+     */
+    public function create(
+        #[MapRequestPayload(
+            acceptFormat: 'json',
+            validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY,
+        )]
+        TicketCreatePayload $payload,
+    ): JsonResponse
+    {
+        // Si los datos son válidos los procesamos
+
+        // Creo un nuevo ticket con los datos del payload
+        $ticket = new Ticket(
+            code: $payload->code,
+            title: $payload->title,
+            priority: $payload->priority,
+            status: $payload->status,
+        );
+
+        // persisto el ticket en la base de datos
+
+        // agrega la tarea a la unidad de trabajo
+        $this->entityManager->persist($ticket);
+        // ejecuta las tareas que esten en la unidad de trabajo
+        $this->entityManager->flush();
+
+        /**
+         * Respondo al cliente con la data creada, código 201, cabeceras con la información de la ruta de creación
+         */
+        return $this->json(
+            [
+                'ticket' => $this->ticketToArray($ticket),
+            ],
+            Response::HTTP_CREATED,
+            [
+                'Location' => $this->generateUrl('app_api_ticket_show', ['code' => $ticket->getCode()])
+            ]
+        );
+    }
+
 
     /**
      * Ruta para solicitar al API un ticket por su código
