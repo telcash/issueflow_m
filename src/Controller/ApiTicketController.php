@@ -21,8 +21,7 @@ final class ApiTicketController extends AbstractController
     public function __construct(
         private readonly TicketCatalogInterface $ticketCatalog,
         private readonly TicketPaginator $ticketPaginator,
-    )
-    {}
+    ) {}
     /**
      * Está petición se hace con el protocolo HTTP, aunque venga de una app móvil
      * Ejemplo de url: miappdeincidencias.com/api/tickets?query=factura&category=1&priority=urgent&page=1
@@ -117,12 +116,55 @@ final class ApiTicketController extends AbstractController
          * El segundo argumento es el array a mapear
          */
         $items = array_map(
-            fn (Ticket $ticket): array => $this->ticketToArray($ticket),
+            fn(Ticket $ticket): array => $this->ticketToArray($ticket),
             $tickets
         );
 
         return $this->json([
             'tickets' => $items
+        ]);
+    }
+
+    /**
+     * Ruta para solicitar al API un ticket por su código
+     */
+    #[Route('/api/tickets/{code}', name: 'app_api_ticket_show', methods: ['GET'])]
+    public function show(string $code): JsonResponse
+    {
+        // En API diferenciamos un formato inválido (400) de un formato válido pero inexistente (404)
+
+        // Verificamos que el formato sea válido
+        if (preg_match('/^INC-\d{4}$/', $code) !== 1) {
+            return $this->json(
+                [
+                    'error' => [
+                        'code' => 'invalid_ticket_code',
+                        'message' => 'El código debe tener el formato INC-0000'
+                    ]
+                ],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        // Si el code tiene un formato válido, buscamos el ticket en la base de datos
+        $ticket = $this->ticketCatalog->findByCode($code);
+
+        // Si el ticket no existe, devolvemos un error
+        if ($ticket === null) {
+            return $this->json(
+                [
+                    'error' => [
+                        'code' => 'ticket_not_found',
+                        'message' => 'La incidencia solicitada no existe'
+                    ]
+                ],
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
+        // Si el ticket existe devolvemos el ticket en el formato correspondiente
+        return $this->json([
+            'ticket' => $this->ticketToArray($ticket),
         ]);
     }
 
