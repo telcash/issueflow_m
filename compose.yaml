@@ -1,25 +1,86 @@
-
+# Orquestador: define los distintos contenedores de mi app, y como trabajan entre sí
+# NO define como funciona cada contenedor internamente
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-16}-alpine
+  # Aplicación de Symfony
+  app:
+    # Variables de entorno de la aplicación Symfony
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
-    healthcheck:
-      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-    volumes:
-      - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+      APP_ENV: dev
+      APP_DEBUG: 1
+      APP_SECRET: docker-local-secret
+      DATABASE_URL: "mysql://issueflow:issueflow_pass@db:3306/issueflow?serverVersion=8.4.0&charset=utf8mb4"
 
+    # Nombre del contenedor
+    container_name: issueflow_app
+
+    # Instrucciones para construir el contenedor, (context: . indica que el archivo Dockerfile
+    # para construir este contenedor se encuentra en el mismo directorio que este archivo)
+    build:
+      context: .
+
+    # Puerto donde se va a ejecutar el contenedor
+    # 8080 es el puerto del ordenador anfitrión y 80 el puerto interno del contenedor
+    ports:
+      - "8080:80"
+
+    # Dependencias (depende este servicio de algún otro)
+    depends_on:
+      db:
+        condition: service_healthy
+    # Esperamos al seeder tambien
+      seeder:
+        condition: service_completed_successfully
+
+  # Base de datos mysql
+  db:
+    environment:
+      MYSQL_DATABASE: issueflow
+      MYSQL_USER: issueflow
+      MYSQL_PASSWORD: issueflow_pass
+      MYSQL_ROOT_PASSWORD: root_pass
+
+    container_name: issueflow_db
+
+    # Uso la imagen oficial de MySQL 8.4 para construir el contenedor
+    image: mysql:8.4
+
+    ports:
+      - "3307:3306"
+
+    # Guarda los datos de MySQL en un volumen persistente
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    # Comando para determinar que este servicio está en un estado healthy, pruebo cada 5s un máximo de 10 veces
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # Inyectar los datos en BBDD
+  seeder:
+    container_name: issueflow_seeder
+    build:
+      context: .
+    command: >
+      sh -c "php bin/console doctrine:migrations:migrate --no-interaction &&
+             php bin/console app:ticket:seed"
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: 1
+      APP_SECRET: docker-local-secret
+      DATABASE_URL: "mysql://issueflow:issueflow_pass@db:3306/issueflow?serverVersion=8.4.0&charset=utf8mb4"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+# Volúmenes de la aplicación
 volumes:
-###> doctrine/doctrine-bundle ###
-  database_data:
-###< doctrine/doctrine-bundle ###
+  mysql_data:
