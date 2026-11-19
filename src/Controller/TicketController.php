@@ -9,6 +9,7 @@ use App\Contract\TicketSlaCalculatorInterface;
 use App\Form\Model\TicketCreateData;
 use App\Form\Model\TicketEditData;
 use App\Form\Model\TicketSearchCriteria;
+use App\Form\TicketDeleteType;
 use App\Form\TicketEditType;
 use App\Form\TicketFilterType;
 use App\Form\TicketType;
@@ -74,11 +75,17 @@ final class TicketController extends AbstractController
          */
         $ticketPage = $this->ticketPaginator->getTicketPage($criteria, $request->query->get('page'));
 
+        /**
+         * Formulario general para eliminación de tickets
+         */
+        $deleteForm = $this->createForm(TicketDeleteType::class);
+
         return $this->render('ticket/index.html.twig', [
             'title' => 'Incidencias',
             'lastTicketCode' => $lastTicketCode,
             'filterForm' => $filterForm,
             'ticketPage' => $ticketPage,
+            'deleteForm' => $deleteForm
         ]);
     }
 
@@ -231,13 +238,47 @@ final class TicketController extends AbstractController
         ]);
     }
 
+    #[Route('/tickets/{code}/delete', name: 'app_ticket_delete', methods: ['POST'])]
+    #[IsGranted(
+        'ROLE_AGENT',
+        message: 'Necesitas permisos de agente para eliminar incidencias.'
+    )]
+    public function delete(string $code, Request $request)
+    {
+        // Buscamos la incidencia que se quiere eliminar en la base de datos
+        $ticket = $this->ticketCatalog->findByCode($code);
 
+        // Si el ticket no existe enviamos un error 404
+        if ($ticket === null) {
+            throw $this->createNotFoundException('No existe la incidencia');
+        }
 
+        /**
+         * Creamos exactamente el mismo tipo de formulario que utilizamos en el listado
+         */
+        $form = $this->createForm(TicketDeleteType::class);
 
+        // Procesamos el formulario
+        $form->handleRequest($request);
 
+        /**
+         * Si el formulario fue enviado y es válido eliminamos la entidad
+         * de la base de datos
+         */
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Marcamos la entidad para ser eliminada
+            $this->entityManager->remove($ticket);
 
+            // Ejecuto el DELETE en la base de datos
+            $this->entityManager->flush();
 
+            // Redirecciono al usuario al listado de tickets
+            return $this->redirectToRoute('app_ticket_index');
+        }
 
+        // Si el formulario no fue enviado o no es válido lanzo un error de acceso denegado 403
+        throw $this->createAccessDeniedException('Formulario de eliminación no válido');
+    }
 
 
     /* Ruta dinámica que muestra la información de un ticket en particular 

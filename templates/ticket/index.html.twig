@@ -77,6 +77,37 @@
         {% endfor %}
     </div>
 
+    {# Modal de confirmación de eliminación de incidencia #}
+    {% if is_granted('ROLE_AGENT') %}
+        <dialog
+            id="delete-ticket-modal"
+            class="confirm-dialog"
+        >
+            <h2 id="delete-ticket-modal-title">
+                Eliminar incidencia
+            </h2>
+            <p>¿Seguro que quieres eliminar <strong data-delete-ticket-code></strong></p>
+            <p data-delete-ticket-title></p>
+            <p>Esta acción no se puede deshacer</p>
+
+            {# Inserto el formulario general de eliminacion #}
+            {{ form_start(deleteForm, { attr: { id: 'delete-ticket-form' } }) }}
+                <div class="modal-actions">
+                    <button
+                        type="button"
+                        class="button button-outline"
+                        data-modal-close
+                    >
+                        Cancelar
+                    </button>
+
+                    {{ form_widget(deleteForm.delete) }}
+                </div>
+            {{ form_end(deleteForm) }}
+        </dialog>
+    {% endif %}
+    
+
     {# Controles de navegación del paginador #}
     {#
         El método hasToPaginate() verifica si es necesario paginar, esto es, si los

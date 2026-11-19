@@ -60,6 +60,18 @@
             >
                 Editar
             </a>
+
+            {# Botón con la información para eliminar un ticket #}
+            <button
+                type="button"
+                class="button button-danger-outline"
+                data-delete-ticket
+                date-delete-code="{{ ticket.code }}"
+                data-delete-title="{{ ticket.title }}"
+                data-delete-url="{{ path('app_ticket_delete', { code: ticket.code }) }}"
+            >
+                Eliminar
+            </button>
         </div>
     {% endif %}
 </article>
