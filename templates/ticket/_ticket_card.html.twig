@@ -52,4 +52,14 @@
         {# Agregamos un enlace a la vista particular de este ticket #}
         <a href="{{ path('app_ticket_show', { code: ticket.code }) }}">Ver detalle</a>
     </div>
+    {% if is_granted('ROLE_AGENT') %}
+        <div class="ticket-actions">
+            <a 
+                class="button button-outline"
+                href="{{ path('app_ticket_edit', { code: ticket.code }) }}"
+            >
+                Editar
+            </a>
+        </div>
+    {% endif %}
 </article>

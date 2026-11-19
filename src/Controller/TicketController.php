@@ -7,7 +7,9 @@ namespace App\Controller;
 use App\Contract\TicketCatalogInterface;
 use App\Contract\TicketSlaCalculatorInterface;
 use App\Form\Model\TicketCreateData;
+use App\Form\Model\TicketEditData;
 use App\Form\Model\TicketSearchCriteria;
+use App\Form\TicketEditType;
 use App\Form\TicketFilterType;
 use App\Form\TicketType;
 use App\Service\TicketPaginator;
@@ -161,6 +163,82 @@ final class TicketController extends AbstractController
             'form' => $form,
         ]);
     }
+
+    /**
+     * Ruta para edición de una incidencia.
+     * GET: el usuario navega a la ruta, le enviamos el formulario de edición
+     * POST: el usuario envía el formulario de edición con los datos y lo procesamos
+     */
+    #[Route('/tickets/{code}/edit', name: 'app_ticket_edit', methods: ['GET', 'POST'])]
+    #[IsGranted(
+        'ROLE_AGENT',
+        message: 'Necesitas permisos de agente para modificar incidencias.'
+    )]
+    public function edit(string $code, Request $request): Response
+    {
+        // Solicitar el ticket a la base de datos
+        $ticket = $this->ticketCatalog->findByCode($code);
+
+        // Si el ticket no existe, lanzamos un error 404 (NOT_FOUND)
+        if ($ticket === null) {
+            throw $this->createNotFoundException('No existe la incidencia');
+        }
+
+        // Estructura de datos (dto) que almacena la información del formulario
+        // La iniciamos con los datos del ticket en cuestión
+        $data = TicketEditData::fromTicket($ticket);
+
+        // Creamos el formulario tipo TicketEditType y asignamos $data para almacenar su información
+        $form = $this->createForm(TicketEditType::class, $data);
+
+        /**
+         * Procesamos el formulario
+         * El método handleRequest() hace lo siguiente:
+         * 1- Detecta si el formulario ya ha sido enviado
+         * 2- Extrae los datos correspondientes del Request
+         * 3- Transforma los valores al tipo esperado
+         * 4- Aisgna los datos al DTO (TicketCreateData)
+         */
+        $form->handleRequest($request);
+
+        /**
+         * Si el formulario fue enviado y es válido, guardamos los cambios en la base de datos
+         * y redireccionamos al usuario al listado de tickets
+         */
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Aplicamos los cambios a la entidad $ticket
+            $data->applyToTicket($ticket);
+            
+            // Hacemos un flush() para actualizar en la base de datos
+            $this->entityManager->flush();
+
+            $this->addFlash(
+                'success',
+                sprintf('Incidencia %s actualizada correctamente.', $ticket->getCode())
+            );
+
+            // Completo el proceso redireccionando al usuario al listado de tickets
+            return $this->redirectToRoute('app_ticket_index');
+        }
+
+        /**
+         * Si el formulario no ha sido enviado o fue enviado pero no es válido,
+         * le mostramos el formulario al cliente
+         */
+        return $this->render('ticket/edit.html.twig', [
+            'ticket' => $ticket,
+            'form' => $form
+        ]);
+    }
+
+
+
+
+
+
+
+
+
 
     /* Ruta dinámica que muestra la información de un ticket en particular 
     {code} representa una parte variable de la URL
