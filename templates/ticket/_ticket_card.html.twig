@@ -61,12 +61,21 @@
                 Editar
             </a>
 
-            {# Botón con la información para eliminar un ticket #}
+            {# 
+                Botón de eliminar, contiene la información necesaria para que el
+                modal de confirmación sepa cual es el ticket en particular que se
+                desea borrar.
+                Usando Javascript,vamos a monitorear cuando ocurra un click en este
+                botón, vamos a recoger la información del ticket y pasarla al modal
+                La información es:
+                Título y código del ticket
+                Url del servidor para hacer la petición de eliminación del ticket
+            #}
             <button
                 type="button"
                 class="button button-danger-outline"
                 data-delete-ticket
-                date-delete-code="{{ ticket.code }}"
+                data-delete-code="{{ ticket.code }}"
                 data-delete-title="{{ ticket.title }}"
                 data-delete-url="{{ path('app_ticket_delete', { code: ticket.code }) }}"
             >

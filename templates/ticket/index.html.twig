@@ -77,22 +77,33 @@
         {% endfor %}
     </div>
 
-    {# Modal de confirmación de eliminación de incidencia #}
+    {#
+        Modal de confirmación de eliminación de incidencia.
+        Solo está disponible para usuarios con ROLE_AGENT
+    #}
     {% if is_granted('ROLE_AGENT') %}
         <dialog
             id="delete-ticket-modal"
             class="confirm-dialog"
         >
-            <h2 id="delete-ticket-modal-title">
-                Eliminar incidencia
-            </h2>
-            <p>¿Seguro que quieres eliminar <strong data-delete-ticket-code></strong></p>
+            <h2 id="delete-ticket-modal">Eliminar incidencia</h2>
+            {#
+                La etiqueta <strong> y la segunda etitqueta <p> deben mostrar
+                respectivamente el código y el título del ticket a eliminar.
+                Como no se cual es el ticket sino hasta el momento que un usuario
+                haga click en uno de los botones de eliminar, estas etiquetas en principio
+                están vacías, no tienen texto. Con Javascript voy a insertar los
+                valores correspondientes cuando ocurra ese click
+            #}
+            <p>¿Seguro que quieres eliminar <strong data-delete-ticket-code></strong>?</p>
             <p data-delete-ticket-title></p>
             <p>Esta acción no se puede deshacer</p>
 
-            {# Inserto el formulario general de eliminacion #}
+            {# Inserto el formulario de eliminación de ticket #}
             {{ form_start(deleteForm, { attr: { id: 'delete-ticket-form' } }) }}
+
                 <div class="modal-actions">
+                    {# Botón de cancelar, que simplemente cierra el modal #}
                     <button
                         type="button"
                         class="button button-outline"
@@ -101,8 +112,10 @@
                         Cancelar
                     </button>
 
+                    {# Botón de eliminar #}
                     {{ form_widget(deleteForm.delete) }}
                 </div>
+
             {{ form_end(deleteForm) }}
         </dialog>
     {% endif %}
